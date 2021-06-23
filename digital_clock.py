@@ -1,29 +1,33 @@
 from datetime import datetime
 import tkinter as tk
-from threading import Thread
-import time
+from time import time
 
 
-class clock():
-     def __init__(self):
-          self.display = tk.Tk()
-     def start(self):
-          def get():
-               self.display.geometry("215x62")
-               self.display.title("Clock")
-               while True:
-                    try:
-                         now = datetime.now()
-                         current_time = now.strftime("%H:%M %p") 
-                         lbl = tk.Label(self.display, text=str(current_time),
-                         background = 'black', font = ("Helvetica", 37),
-                         foreground = 'red')
-                         lbl.place(x=0, y=0)
-                         time.sleep(0.1)
-                    except:
-                         break
-          receive_thread = Thread(target=get)
-          receive_thread.start()
-          self.display.mainloop()
-clock = clock()
-clock.start()
+def main() -> None:
+    display = tk.Tk()
+    display.geometry('215x62')
+    display.title('Clock')
+
+    lbl = tk.Label(
+        display,
+        background='black',
+        font=('Helvetica', 37),
+        foreground='red',
+    )
+    lbl.place(x=0, y=0)
+
+    def tick() -> None:
+        now = datetime.now()
+        lbl.config(text=now.strftime('%I:%M %p'))
+
+        until_next = round(
+            1000 * (60 - time()%60)
+        )
+        display.after(ms=until_next, func=tick)
+
+    tick()
+    display.mainloop()
+
+
+if __name__ == '__main__':
+    main()
